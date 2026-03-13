@@ -2,19 +2,23 @@
 
 ## Stack
 
-- **Framework:** Next.js 16 (App Router)
-- **Styling:** Tailwind CSS v4 with `@theme` variables
-- **Linting:** Biome
+- **Framework:** Next.js 16 (App Router, React Compiler, Turbopack)
+- **Styling:** Tailwind CSS v4 with '@theme' variables,
+  'tailwind-variants' for component variants
+- **Linting:** Biome 2.4 (formatter + linter, 'tailwindDirectives: true")
 - **Package manager:** pnpm
+- **Language:** TypeScript (strict)
 
 ## Conventions
 
 - **Language:** Portuguese for communication, English for code
-- **Exports:** Always named exports. Never `export default`
-- **Components:** Use composition pattern with sub-components (Root, Title, etc.)
-- **Class merging:** Use `tv()` for variants, `twMerge()` for simple merges
-- **Colors:** Defined in `@theme`, use canonical Tailwind classes
-- **Fonts:** `font-sans` (system), `font-mono` (JetBrains Mono)
+- **Exports:** Always named exports. Never 'export default' (except
+  Next.js pages).
+- **Components:** Extend native HTML props via 'ComponentProps<"element"›. Use `tv()` for variants. Use composition pattern (sub-components) for complex components with 2+ content areas.
+- **CLass merging:** Use `tv({ className })` for components with variants. Use `twMerge()` for components without variants. Never string interpolation.
+- **Colors:** Defined in `@theme` block (`--color-*`), used as canonical Tailwind classes (`bg-accent-green`, not `bg-(-color-accent-green)`). Exception: SVG attributes use `var(--color-*)`.
+- **Fonts:** `font-sans` (system) and `font-mono` (JetBrains Mono) only. No custom font classes.
+- **Buttons:** `enabled:hover:` and `enabled:active:` prefixes to prevent hover styles when disabled.
 
 ## Project Structure
 
@@ -26,8 +30,9 @@ src/
   components/ui/AGENTS.md  # Component patterns
 ```
 
-## Key Patterns
+## Key Decisions
 
-- UI components use composition pattern (Root, Sub, etc.)
-- Server components for static rendering (CodeBlock)
-- Client components for interactivity (Toggle, CodeEditor)
+- `CodeBlock` is an async React Server Component using shiki with vesper theme
+- `Toggle` uses `@base-ui/react` Switch primitive for accessibility
+- `ScoreRing` has a single fixed size (180px)
+- Biome config has `noUnknownAtRules` ignore list for Tailwind directives (`@theme`, `@apply`, `@utility`)
