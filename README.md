@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevRoast
+
+<p align="center">
+  <strong>Paste your code. Get roasted.</strong>
+</p>
+
+<p align="center">
+  The brutal code review tool that tells you exactly how bad your code really is.
+</p>
+
+---
+
+## What is DevRoast?
+
+DevRoast is a code review tool that evaluates your code and gives you a brutally honest score. Built during NLW (Next Level Week) from [Rocketseat](https://www.rocketseat.com.br), it combines static analysis with a touch of sarcasm to help you improve your coding skills.
+
+## Features
+
+- **Code Submission** - Paste your code and get an instant review
+- **Brutal Scoring** - Scores range from 0-10, and honestly? Most code doesn't do well
+- **Roast Mode** - Toggle between honest feedback and maximum sarcasm
+- **Leaderboard** - See the worst code on the internet, ranked by shame
+- **Detailed Analysis** - Get specific feedback on what's wrong with your code
+
+## How It Works
+
+1. Paste your code into the editor
+2. Toggle "roast mode" for extra spicy feedback (optional)
+3. Click "roast_my_code" 
+4. Get your brutally honest score and analysis
+
+## Tech Stack
+
+- Next.js 16
+- React 19
+- Tailwind CSS
+- shiki (syntax highlighting)
+- Base UI
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Clone the repository
+git clone <repo-url>
+
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see DevRoast in action.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Contributions are welcome! Feel free to open issues and pull requests.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+MIT License - feel free to use this for your own brutal code reviews.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+<p align="center">
+  Built with 🔥 during NLW by <a href="https://www.rocketseat.com.br">Rocketseat</a>
+</p>
