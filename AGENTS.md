@@ -1,41 +1,33 @@
 # DevRoast - Project Patterns
 
 ## Stack
-- Next.js 16 (App Router)
-- React 19
-- Tailwind CSS v4
-- Biome (lint/format)
-- shiki (syntax highlighting)
-- @base-ui/react
 
-## UI Components (`src/components/ui/`)
-- Composition pattern: `ComponentRoot`, `ComponentSub`, etc.
-- Named exports only
-- Tailwind v4 classes directly
-- CSS variables via `@theme` in `globals.css`
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS v4 with `@theme` variables
+- **Linting:** Biome
+- **Package manager:** pnpm
 
-## Component Structure
-```tsx
-// src/components/ui/example.tsx
-import { tv } from "tailwind-variants";
+## Conventions
 
-const example = tv({
-  base: [...],
-  variants: {...},
-});
+- **Language:** Portuguese for communication, English for code
+- **Exports:** Always named exports. Never `export default`
+- **Components:** Use composition pattern with sub-components (Root, Title, etc.)
+- **Class merging:** Use `tv()` for variants, `twMerge()` for simple merges
+- **Colors:** Defined in `@theme`, use canonical Tailwind classes
+- **Fonts:** `font-sans` (system), `font-mono` (JetBrains Mono)
 
-function ExampleRoot({ children, className }) {
-  return <div className={example({ className })}>{children}</div>;
-}
+## Project Structure
 
-function ExampleSub({ className, children }) {
-  return <span className={className}>{children}</span>;
-}
-
-export const Example = Object.assign(ExampleRoot, { Sub: ExampleSub });
+```
+src/
+  app/                    # Next.js pages
+  components/             # Feature-specific components
+    ui/                  # Reusable UI primitives
+  components/ui/AGENTS.md  # Component patterns
 ```
 
-## Pages
-- Layout: `src/app/layout.tsx` (includes Navbar)
-- Home: `src/app/page.tsx`
-- Components demo: `src/app/components/page.tsx`
+## Key Patterns
+
+- UI components use composition pattern (Root, Sub, etc.)
+- Server components for static rendering (CodeBlock)
+- Client components for interactivity (Toggle, CodeEditor)

@@ -1,33 +1,33 @@
 # DevRoast
 
 <p align="center">
-  <strong>Paste your code. Get roasted.</strong>
+  <strong>Paste seu código. seja criticado.</strong>
 </p>
 
 <p align="center">
-  The brutal code review tool that tells you exactly how bad your code really is.
+  A ferramenta de revisão de código que te diz exatamente quão ruim seu código é.
 </p>
 
 ---
 
-## What is DevRoast?
+## O que é o DevRoast?
 
-DevRoast is a code review tool that evaluates your code and gives you a brutally honest score. Built during NLW (Next Level Week) from [Rocketseat](https://www.rocketseat.com.br), it combines static analysis with a touch of sarcasm to help you improve your coding skills.
+DevRoast é uma ferramenta de revisão de código que avalia seu código e te dá uma nota brutalmente honesta. Construído durante o NLW (Next Level Week) da [Rocketseat](https://www.rocketseat.com.br), ele combina análise estática com um toque de sarcasmo para te ajudar a melhorar suas habilidades de programação.
 
-## Features
+## Funcionalidades
 
-- **Code Submission** - Paste your code and get an instant review
-- **Brutal Scoring** - Scores range from 0-10, and honestly? Most code doesn't do well
-- **Roast Mode** - Toggle between honest feedback and maximum sarcasm
-- **Leaderboard** - See the worst code on the internet, ranked by shame
-- **Detailed Analysis** - Get specific feedback on what's wrong with your code
+- **Envio de Código** - Cole seu código e receba uma revisão instantânea
+- **Pontuação Brutal** - Notas variam de 0-10, e sejamos honestos? A maioria não vai bem
+- **Modo Roast** - Alterna entre feedback honesto e sarcasmo máximo
+- **Leaderboard** - Veja o pior código da internet, ranqueado pela vergonha
+- **Análise Detalhada** - Receba feedbacks específicos sobre o que está errado no seu código
 
-## How It Works
+## Como Funciona
 
-1. Paste your code into the editor
-2. Toggle "roast mode" for extra spicy feedback (optional)
-3. Click "roast_my_code" 
-4. Get your brutally honest score and analysis
+1. Cole seu código no editor
+2. Ative o "modo roast" para feedbacks mais picantes (opcional)
+3. Clique em "roast_my_code"
+4. Receba sua nota brutalmente honesta e análise
 
 ## Tech Stack
 
@@ -37,31 +37,31 @@ DevRoast is a code review tool that evaluates your code and gives you a brutally
 - shiki (syntax highlighting)
 - Base UI
 
-## Getting Started
+## Começando
 
 ```bash
-# Clone the repository
+# Clone o repositório
 git clone <repo-url>
 
-# Install dependencies
+# Instale as dependências
 npm install
 
-# Run the development server
+# Rode o servidor de desenvolvimento
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see DevRoast in action.
+Abra [http://localhost:3000](http://localhost:3000) para ver o DevRoast em ação.
 
-## Contributing
+## Contribuindo
 
-Contributions are welcome! Feel free to open issues and pull requests.
+Contribuições são bem-vindas! Sinta-se livre para abrir issues e pull requests.
 
-## License
+## Licença
 
-MIT License - feel free to use this for your own brutal code reviews.
+MIT License - sinta-se livre para usar isso para suas próprias revisões de código brutais.
 
 ---
 
 <p align="center">
-  Built with 🔥 during NLW by <a href="https://www.rocketseat.com.br">Rocketseat</a>
+  Construído com 🔥 durante o NLW pela <a href="https://www.rocketseat.com.br">Rocketseat</a>
 </p>
