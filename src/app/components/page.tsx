@@ -6,7 +6,11 @@ import {
 } from "@/components/ui/analysis-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CodeBlock } from "@/components/ui/code-block";
+import {
+  CodeBlockCodeArea,
+  CodeBlockHeaderMac,
+  CodeBlockRoot,
+} from "@/components/ui/code-block";
 import { DiffLine } from "@/components/ui/diff-line";
 import { ScoreRing } from "@/components/ui/score-ring";
 import {
@@ -171,11 +175,10 @@ export default function ComponentsPage() {
           <h2 className="text-xl font-mono text-text-secondary">CodeBlock</h2>
 
           <div className="space-y-6 p-6 bg-bg-surface rounded-lg border border-border-primary">
-            <CodeBlock
-              code={sampleCode}
-              language="javascript"
-              filename="calculate.js"
-            />
+            <CodeBlockRoot>
+              <CodeBlockHeaderMac filename="calculate.js" />
+              <CodeBlockCodeArea code={sampleCode} language="javascript" />
+            </CodeBlockRoot>
           </div>
         </section>
 
