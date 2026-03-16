@@ -43,4 +43,41 @@
     background-color: var(--color-bg-page);
     color: var(--color-text-primary);
   }
+
+  /* Custom scrollbar - only on overflow-auto elements */
+  .overflow-auto,
+  .overflow-y-auto {
+    scrollbar-width: thin;
+    scrollbar-color: #333 #111;
+  }
+
+  /* Chrome, Safari, Edge */
+  .overflow-auto::-webkit-scrollbar,
+  .overflow-y-auto::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .overflow-auto::-webkit-scrollbar-track,
+  .overflow-y-auto::-webkit-scrollbar-track {
+    background: #111;
+  }
+
+  .overflow-auto::-webkit-scrollbar-thumb,
+  .overflow-y-auto::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 4px;
+  }
+
+  .overflow-auto::-webkit-scrollbar-thumb:hover,
+  .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background-color: #444;
+  }
+
+  /* Force transparent background on Shiki-generated code */
+  .shiki-output code,
+  .shiki-output span,
+  .shiki-output * {
+    background-color: transparent !important;
+  }
 }
