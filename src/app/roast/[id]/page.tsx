@@ -126,7 +126,12 @@ export default async function RoastResultPage({
                 </div>
                 <div className="flex flex-col bg-bg-input">
                   {diffLines.map((line, i) => (
-                    <DiffLine key={i} type={line.type} code={line.code} />
+                    <DiffLine
+                      // biome-ignore lint/suspicious/noArrayIndexKey: diff lines are static
+                      key={`${line.type}-${i}`}
+                      type={line.type}
+                      code={line.code}
+                    />
                   ))}
                 </div>
               </div>

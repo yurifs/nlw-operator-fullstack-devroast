@@ -1,7 +1,7 @@
 import { avg, count } from "drizzle-orm";
 import { z } from "zod";
 import { analysisItems, roasts, type verdictEnum } from "@/db/schema";
-import { analyzeCodeWithTimeout } from "@/lib/groq";
+import { analyzeCodeWithTimeout, type RoastResponse } from "@/lib/groq";
 import { baseProcedure, createTRPCRouter } from "../init";
 
 type Verdict = (typeof verdictEnum.enumValues)[number];
@@ -20,6 +20,15 @@ const verdictValues: readonly string[] = [
 ];
 
 const severityValues = ["critical", "warning", "good"] as const;
+
+const severityMap: Record<string, (typeof severityValues)[number]> = {
+  error: "critical",
+  critical: "critical",
+  warning: "warning",
+  warn: "warning",
+  good: "good",
+  info: "good",
+};
 
 const analysisItemSchema = z.object({
   severity: z.enum(severityValues),
@@ -61,12 +70,12 @@ export const roastRouter = createTRPCRouter({
     .input(
       z.object({
         code: z.string().min(1).max(10000),
-        language: z.string(),
+        language: z.string().min(1),
         roastMode: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      let analysis;
+      let analysis: RoastResponse;
       try {
         analysis = await analyzeCodeWithTimeout(
           input.code,
@@ -93,7 +102,13 @@ export const roastRouter = createTRPCRouter({
       const validAnalysis = analysis.analysis
         .slice(0, 10)
         .map((item, index) => {
-          const parsed = analysisItemSchema.safeParse(item);
+          const normalizedSeverity =
+            severityMap[item.severity.toLowerCase()] ?? "warning";
+          const normalizedItem = {
+            ...item,
+            severity: normalizedSeverity,
+          };
+          const parsed = analysisItemSchema.safeParse(normalizedItem);
           if (parsed.success) {
             return { ...parsed.data, order: index };
           }

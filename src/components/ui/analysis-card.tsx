@@ -29,7 +29,7 @@ const severityDot = tv({
 });
 
 const severityTitle = tv({
-  base: ["font-mono text-sm"],
+  base: ["font-mono text-xs"],
   variants: {
     variant: {
       critical: ["text-accent-red"],

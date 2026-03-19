@@ -1,5 +1,3 @@
-import { ScoreRing } from "@/components/ui/score-ring";
-
 export default function RoastLoading() {
   return (
     <main className="flex flex-col items-center bg-bg-page min-h-[calc(100vh-3.5rem)]">

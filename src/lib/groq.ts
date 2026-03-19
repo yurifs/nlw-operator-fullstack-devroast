@@ -1,7 +1,6 @@
 interface GroqConfig {
   apiKey: string;
   model?: string;
-  maxTokens?: number;
   temperature?: number;
 }
 
@@ -28,38 +27,23 @@ export async function analyzeCode(
   const apiKey = config?.apiKey || process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("GROQ_API_KEY not configured");
   const model = config?.model || "llama-3.3-70b-versatile";
-  const maxTokens = config?.maxTokens || 2048;
   const temperature = config?.temperature || 0.7;
 
   const systemPrompt = roastMode
-    ? `You are a brutally sarcastic code reviewer. Your job is to roast terrible code with maximum dramatic flair, theatrical despair, and genuinely scathing commentary. Make developers question their career choices. Use JSON ONLY.`
-    : `You are a brutally honest code reviewer. Give constructive criticism with a sharp edge. Use JSON ONLY.`;
+    ? "You are a brutally sarcastic code reviewer. Your job is to roast terrible code with maximum dramatic flair, theatrical despair, and genuinely scathing commentary. Make developers question their career choices."
+    : "You are a brutally honest code reviewer. Give constructive criticism with a sharp edge.";
 
-  const userPrompt = `Analyze this ${language} code and respond with valid JSON.
+  const userPrompt = `Analyze this ${language} code and respond ONLY with valid JSON.
 
-IMPORTANT: The suggestedFix MUST be in git diff format with lines starting with:
-- "-" for removed lines
-- "+" for added lines
-- " " (space) for context lines
-
-Example format:
-\`\`\`
-  const oldCode = "removed line";
-- const badVariable = "to be removed";
-+ const goodVariable = "replacement";
-  const unchangedCode = "stays the same";
-\`\`\`
-
-Respond with JSON:
-
+The JSON must have exactly this structure:
 {
-  "score": <0-10, where 0 is worst>,
+  "score": number (0-10, 0 is worst),
   "verdict": "needs_serious_help" | "rough_around_edges" | "decent_code" | "solid_work" | "exceptional",
-  "roastQuote": "<one line sarcastic/honest comment>",
+  "roastQuote": "one line comment",
   "analysis": [
-    {"severity": "critical" | "warning" | "good", "title": "<short issue name>", "description": "<detailed explanation>"}
+    {"severity": "critical" | "warning" | "good", "title": "issue name", "description": "explanation"}
   ],
-  "suggestedFix": "YOUR CODE IN GIT DIFF FORMAT - lines with +, -, or space prefix"
+  "suggestedFix": "improved code in git diff format with - for removed, + for added, space for context"
 }
 
 Code to analyze:
@@ -82,7 +66,9 @@ ${code}
           { role: "user", content: userPrompt },
         ],
         temperature,
-        max_tokens: maxTokens,
+        response_format: {
+          type: "json_object",
+        },
       }),
     },
   );
@@ -99,76 +85,23 @@ ${code}
     throw new Error("No content in Groq response");
   }
 
-  // Extract JSON from response (handle markdown code blocks)
-  const jsonMatch = content.match(/```(?:json)?\n?([\s\S]*?)\n?```/) || [
-    null,
-    content,
-  ];
-  const jsonStr = jsonMatch[1] || content;
-
   try {
-    return JSON.parse(jsonStr) as RoastResponse;
+    return JSON.parse(content) as RoastResponse;
   } catch {
-    // Retry with simpler prompt - emphasize diff format
-    const retryPrompt = `Analyze this ${language} code. Respond with JSON ONLY, no other text.
-
-CRITICAL: suggestedFix MUST be git diff format with lines starting with "-" (removed), "+" (added), or " " (context).
-
-Respond:
-{"score": 5, "verdict": "decent_code", "roastQuote": "Code reviewed", "analysis": [{"severity": "warning", "title": "Review needed", "description": "Could be improved"}], "suggestedFix": "  old line\n- removed bad line\n+ improved line\n  next line"}
-
-Code:
-${code}`;
-
-    const retryResponse = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model,
-          messages: [{ role: "user", content: retryPrompt }],
-          temperature: 0.3,
-          max_tokens: 1024,
-        }),
-      },
-    );
-
-    if (!retryResponse.ok) {
-      throw new Error("Groq API retry failed");
-    }
-
-    const retryData = await retryResponse.json();
-    const retryContent = retryData.choices[0]?.message?.content;
-
-    if (!retryContent) {
-      throw new Error("No content in Groq retry response");
-    }
-
-    try {
-      return JSON.parse(retryContent) as RoastResponse;
-    } catch {
-      throw new Error(
-        `Failed to parse JSON after retry: ${retryContent.substring(0, 200)}`,
-      );
-    }
+    throw new Error(`Failed to parse JSON: ${content.substring(0, 200)}`);
   }
 }
 
-// Timeout wrapper
 export async function analyzeCodeWithTimeout(
   ...args: Parameters<typeof analyzeCode>
 ): Promise<RoastResponse> {
-  const timeout = 10000; // 10 seconds
+  const timeout = 30000;
 
   return Promise.race([
     analyzeCode(...args),
     new Promise<never>((_, reject) =>
       setTimeout(
-        () => reject(new Error("Analysis timed out after 10s")),
+        () => reject(new Error("Analysis timed out after 30s")),
         timeout,
       ),
     ),

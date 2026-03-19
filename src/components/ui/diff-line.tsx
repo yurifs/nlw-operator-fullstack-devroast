@@ -4,8 +4,8 @@ const diffLine = tv({
   base: ["font-mono text-sm", "flex gap-2 px-4 py-2"],
   variants: {
     type: {
-      removed: ["bg-red-950/50", "text-text-secondary"],
-      added: ["bg-green-950/50", "text-text-primary"],
+      removed: ["bg-[#1A0A0A]", "text-text-secondary"],
+      added: ["bg-[#0A1A0F]", "text-text-primary"],
       context: ["text-text-tertiary"],
     },
   },

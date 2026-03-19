@@ -1,5 +1,3 @@
-import { HomeLeaderboardSkeleton } from "../home-leaderboard-skeleton";
-
 export default function LeaderboardLoading() {
   return (
     <main className="flex flex-col items-center min-h-screen bg-bg-page">
@@ -22,9 +20,10 @@ export default function LeaderboardLoading() {
         </div>
 
         <div className="flex flex-col gap-4">
-          {[...Array(5)].map((_, i) => (
+          {Array.from({ length: 5 }, (_, i) => (
             <div
-              key={i}
+              // biome-ignore lint/suspicious/noArrayIndexKey: skeleton items are static
+              key={`skeleton-${i}`}
               className="border border-border-primary overflow-hidden"
             >
               <div className="flex items-center justify-between h-12 px-5 bg-bg-surface border-b border-border-primary">
@@ -39,7 +38,6 @@ export default function LeaderboardLoading() {
                   <span className="bg-bg-elevated animate-pulse rounded h-4 w-16" />
                 </div>
               </div>
-
               <div className="p-5">
                 <div className="flex gap-4">
                   <div className="w-10 shrink-0 space-y-1">
