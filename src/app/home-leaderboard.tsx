@@ -28,38 +28,40 @@ export async function HomeLeaderboard() {
           const previewCode = truncateCode(entry.code, 5);
 
           return (
-            <CodeBlock key={entry.id}>
-              <CodeBlockHeaderMetaContainer>
-                <div className="flex items-center gap-4">
-                  <CodeBlockHeaderMetaRank rank={index + 1} />
-                  <CodeBlockHeaderMetaScore score={entry.score} />
-                </div>
-                <div className="flex items-center gap-3">
-                  <CodeBlockHeaderMetaLanguage>
-                    {entry.language}
-                  </CodeBlockHeaderMetaLanguage>
-                  <CodeBlockHeaderMetaLineCount>
-                    {entry.lineCount}
-                  </CodeBlockHeaderMetaLineCount>
-                </div>
-              </CodeBlockHeaderMetaContainer>
+            <div key={entry.id} className="border border-border-primary">
+              <CodeBlock>
+                <CodeBlockHeaderMetaContainer>
+                  <div className="flex items-center gap-4">
+                    <CodeBlockHeaderMetaRank rank={index + 1} />
+                    <CodeBlockHeaderMetaScore score={entry.score} />
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <CodeBlockHeaderMetaLanguage>
+                      {entry.language}
+                    </CodeBlockHeaderMetaLanguage>
+                    <CodeBlockHeaderMetaLineCount>
+                      {entry.lineCount}
+                    </CodeBlockHeaderMetaLineCount>
+                  </div>
+                </CodeBlockHeaderMetaContainer>
 
-              <LeaderboardEntryCode
-                lineCount={entry.lineCount}
-                preview={
-                  <CodeBlockCodeArea
-                    code={previewCode}
-                    language={entry.language}
-                  />
-                }
-                fullCode={
-                  <CodeBlockCodeArea
-                    code={entry.code}
-                    language={entry.language}
-                  />
-                }
-              />
-            </CodeBlock>
+                <LeaderboardEntryCode
+                  lineCount={entry.lineCount}
+                  preview={
+                    <CodeBlockCodeArea
+                      code={previewCode}
+                      language={entry.language}
+                    />
+                  }
+                  fullCode={
+                    <CodeBlockCodeArea
+                      code={entry.code}
+                      language={entry.language}
+                    />
+                  }
+                />
+              </CodeBlock>
+            </div>
           );
         })}
       </div>

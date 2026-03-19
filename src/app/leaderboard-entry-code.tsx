@@ -34,7 +34,7 @@ export function LeaderboardEntryCode({
         )}
       </div>
 
-      <div className="flex justify-center mt-2">
+      <div className="flex justify-center my-2">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
