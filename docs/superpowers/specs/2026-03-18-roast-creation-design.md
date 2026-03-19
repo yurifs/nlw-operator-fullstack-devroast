@@ -53,10 +53,10 @@ async function analyzeCode(
 ```typescript
 interface RoastResponse {
   score: number;                    // 0-10 (0 = worst)
-  verdict: Verdict;                  // From enum
-  roastQuote: string;                // One-line sarcastic comment
-  analysis: AnalysisItem[];          // 3-5 items
-  suggestedFix?: string;             // Optional diff format
+  verdict: Verdict;                 // From enum
+  roastQuote: string;               // One-line sarcastic comment
+  analysis: AnalysisItem[];         // 3-5 items (validate: min 1)
+  suggestedFix?: string;            // Optional diff format
 }
 
 interface AnalysisItem {
@@ -134,22 +134,56 @@ analysisItems: {
 ```typescript
 create: baseProcedure
   .input(z.object({
-    code: z.string().min(1).max(2000),
+    code: z.string().min(1).max(10000),
     language: z.string(),
     roastMode: z.boolean(),
   }))
   .mutation(async ({ ctx, input }) => {
-    // 1. Analyze with Groq
-    // 2. Save roast to DB
-    // 3. Save analysisItems to DB
-    // 4. Return { id }
+    // 1. Analyze with Groq (with 10s timeout, 1 retry)
+    // 2. Validate response:
+    //    - score: 0-10
+    //    - verdict: valid enum value
+    //    - analysis: min 1 item
+    //    - each item: valid severity + non-empty title/description
+    // 3. Save roast to DB
+    // 4. Save analysisItems to DB
+    // 5. Return { id }
   })
 ```
 
-### Existing Procedures
+### New Procedure: `roast.getById`
 
-- `roast.getStats` - Already exists
-- `roast.getById` - Need to add for details page
+```typescript
+getById: baseProcedure
+  .input(z.object({
+    id: z.string().uuid(),
+  }))
+  .query(async ({ ctx, input }) => {
+    // Fetch roast with related analysisItems
+    // Return null if not found
+  })
+
+// Return type:
+interface RoastWithAnalysis {
+  id: string;
+  code: string;
+  language: string;
+  lineCount: number;
+  roastMode: boolean;
+  score: number;
+  verdict: Verdict;
+  roastQuote: string;
+  suggestedFix: string | null;
+  createdAt: Date;
+  analysisItems: Array<{
+    id: string;
+    severity: "critical" | "warning" | "good";
+    title: string;
+    description: string;
+    order: number;
+  }>;
+}
+```
 
 ## Frontend Components
 
@@ -223,9 +257,13 @@ GROQ_API_KEY=          # From groq.cloud
 ## Error Handling
 
 1. **Groq API failure**: Return error message, allow retry
-2. **Invalid response format**: Parse with fallback, log for debugging
+2. **Invalid response format / JSON parse failure**:
+   - Strategy 1: Retry once with simpler prompt (remove "Respond ONLY with JSON" emphasis)
+   - Strategy 2: If still fails, return error to user with "Analysis failed, please try again"
+   - Log raw response for debugging
 3. **Database error**: Throw tRPC error, show user-friendly message
-4. **Rate limiting**: Handle 429 from Groq, show cooldown message
+4. **Rate limiting (429)**: Handle gracefully, show cooldown message
+5. **Timeout**: 10 second timeout, show "Analysis taking longer than expected" message
 
 ## Out of Scope
 
