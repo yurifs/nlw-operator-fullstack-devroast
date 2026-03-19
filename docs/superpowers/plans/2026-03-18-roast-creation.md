@@ -129,8 +129,61 @@ ${code}
   try {
     return JSON.parse(jsonStr) as RoastResponse;
   } catch {
-    throw new Error(`Failed to parse JSON: ${jsonStr.substring(0, 200)}`);
+    // Retry with simpler prompt
+    const retryPrompt = `Analyze this ${language} code and respond with ONLY valid JSON, no other text:
+
+{"score": 5, "verdict": "decent_code", "roastQuote": "Needs review", "analysis": [{"severity": "warning", "title": "Review needed", "description": "This code could be improved"}]}
+
+Now analyze:
+${code}`;
+
+    const retryResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "user", content: retryPrompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 1024,
+      }),
+    });
+
+    if (!retryResponse.ok) {
+      throw new Error("Groq API retry failed");
+    }
+
+    const retryData = await retryResponse.json();
+    const retryContent = retryData.choices[0]?.message?.content;
+
+    if (!retryContent) {
+      throw new Error("No content in Groq retry response");
+    }
+
+    try {
+      return JSON.parse(retryContent) as RoastResponse;
+    } catch {
+      throw new Error(`Failed to parse JSON after retry: ${retryContent.substring(0, 200)}`);
+    }
   }
+}
+
+// Timeout wrapper
+export async function analyzeCodeWithTimeout(
+  ...args: Parameters<typeof analyzeCode>
+): Promise<RoastResponse> {
+  const timeout = 10000; // 10 seconds
+
+  return Promise.race([
+    analyzeCode(...args),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Analysis timed out after 10s")), timeout)
+    ),
+  ]);
 }
 ```
 
@@ -168,6 +221,23 @@ import { analyzeCode } from "@/lib/groq";
 
 // ... existing getStats
 
+// Zod validation schemas (add to roast.ts imports)
+const verdictValues = [
+  "needs_serious_help",
+  "rough_around_edges",
+  "decent_code",
+  "solid_work",
+  "exceptional",
+] as const;
+
+const severityValues = ["critical", "warning", "good"] as const;
+
+const analysisItemSchema = z.object({
+  severity: z.enum(severityValues),
+  title: z.string().min(1).max(200),
+  description: z.string().min(1),
+});
+
 create: baseProcedure
   .input(
     z.object({
@@ -177,16 +247,45 @@ create: baseProcedure
     }),
   )
   .mutation(async ({ ctx, input }) => {
-    // Analyze with Groq
-    const analysis = await analyzeCode(
-      input.code,
-      input.language,
-      input.roastMode
-    );
+    // Analyze with Groq (with 10s timeout)
+    let analysis;
+    try {
+      analysis = await analyzeCodeWithTimeout(
+        input.code,
+        input.language,
+        input.roastMode,
+      );
+    } catch (error) {
+      throw new Error(`Analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+    }
 
-    // Validate analysis has at least 1 item
+    // Validate analysis
     if (!analysis.analysis || analysis.analysis.length === 0) {
       throw new Error("Analysis must have at least 1 item");
+    }
+
+    // Validate score is 0-10
+    const score = Math.min(10, Math.max(0, Number(analysis.score) || 5));
+
+    // Validate verdict is valid enum value
+    const verdict = verdictValues.includes(analysis.verdict as any)
+      ? analysis.verdict
+      : "decent_code";
+
+    // Validate analysis items
+    const validAnalysis = analysis.analysis
+      .slice(0, 10) // Max 10 items
+      .map((item, index) => {
+        const parsed = analysisItemSchema.safeParse(item);
+        if (parsed.success) {
+          return { ...parsed.data, order: index };
+        }
+        return null;
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null);
+
+    if (validAnalysis.length === 0) {
+      throw new Error("Analysis must have at least 1 valid item");
     }
 
     // Save roast
@@ -197,21 +296,21 @@ create: baseProcedure
         language: input.language,
         lineCount: input.code.split("\n").length,
         roastMode: input.roastMode,
-        score: analysis.score,
-        verdict: analysis.verdict,
-        roastQuote: analysis.roastQuote,
+        score,
+        verdict,
+        roastQuote: analysis.roastQuote || "Code reviewed.",
         suggestedFix: analysis.suggestedFix || null,
       })
       .returning({ id: roasts.id });
 
     // Save analysis items
     await ctx.db.insert(analysisItems).values(
-      analysis.analysis.map((item, index) => ({
+      validAnalysis.map((item) => ({
         roastId: roast.id,
         severity: item.severity,
         title: item.title,
         description: item.description,
-        order: index,
+        order: item.order,
       })),
     );
 
@@ -240,40 +339,19 @@ getById: baseProcedure
   }),
 ```
 
-- [ ] **Step 4: Add drizzle relation for analysisItems**
+- [ ] **Step 4: Add drizzle relations**
 
-In `src/db/schema.ts`, add relation:
+In `src/db/schema.ts`, add relations at the end of the file:
 
 ```typescript
-export const roasts = pgTable(
-  "roasts",
-  { /* ... existing fields */ },
-  (table) => [
-    index("roasts_score_idx").on(table.score),
-    index("roasts_created_at_idx").on(table.createdAt),
-  ],
-);
+import { relations } from "drizzle-orm";
 
-// Add relation (after roasts table definition, add this)
+// Add after roasts table definition:
 export const roastsRelations = relations(roasts, ({ many }) => ({
   analysisItems: many(analysisItems),
 }));
-```
 
-And update analysisItems:
-
-```typescript
-export const analysisItems = pgTable(
-  "analysis_items",
-  {
-    // ... existing fields
-  },
-  (table) => [
-    index("analysis_items_roast_id_idx").on(table.roastId),
-  ],
-);
-
-// Add relation
+// Add after analysisItems table definition:
 export const analysisItemsRelations = relations(analysisItems, ({ one }) => ({
   roast: one(roasts, {
     fields: [analysisItems.roastId],
@@ -431,6 +509,7 @@ export default async function RoastResultPage({
               <span>·</span>
               <span>{roast.lineCount} lines</span>
             </div>
+            {/* NO share button - out of scope */}
           </div>
         </div>
 
