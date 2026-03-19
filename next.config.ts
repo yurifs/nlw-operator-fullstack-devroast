@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
       expire: 86400,
     },
   },
+  serverExternalPackages: ["@takumi-rs/core"],
 };
 
 export default nextConfig;
