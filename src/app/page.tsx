@@ -6,6 +6,8 @@ import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 import { HomeLeaderboard } from "./home-leaderboard";
 import { HomeLeaderboardSkeleton } from "./home-leaderboard-skeleton";
 
+export const revalidate = 3600;
+
 export default async function Home() {
   prefetch(trpc.roast.getStats.queryOptions());
 

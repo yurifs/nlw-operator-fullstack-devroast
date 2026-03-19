@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/code-block";
 import { caller, HydrateClient, prefetch, trpc } from "@/trpc/server";
 
+export const revalidate = 3600;
+
 prefetch(trpc.roast.getStats.queryOptions());
 
 function truncateCode(code: string, maxLines: number): string {
