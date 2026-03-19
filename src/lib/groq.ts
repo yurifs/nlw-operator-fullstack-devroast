@@ -35,7 +35,22 @@ export async function analyzeCode(
     ? `You are a brutally sarcastic code reviewer. Your job is to roast terrible code with maximum dramatic flair, theatrical despair, and genuinely scathing commentary. Make developers question their career choices. Use JSON ONLY.`
     : `You are a brutally honest code reviewer. Give constructive criticism with a sharp edge. Use JSON ONLY.`;
 
-  const userPrompt = `Analyze this ${language} code and respond with valid JSON:
+  const userPrompt = `Analyze this ${language} code and respond with valid JSON.
+
+IMPORTANT: The suggestedFix MUST be in git diff format with lines starting with:
+- "-" for removed lines
+- "+" for added lines
+- " " (space) for context lines
+
+Example format:
+\`\`\`
+  const oldCode = "removed line";
+- const badVariable = "to be removed";
++ const goodVariable = "replacement";
+  const unchangedCode = "stays the same";
+\`\`\`
+
+Respond with JSON:
 
 {
   "score": <0-10, where 0 is worst>,
@@ -44,10 +59,10 @@ export async function analyzeCode(
   "analysis": [
     {"severity": "critical" | "warning" | "good", "title": "<short issue name>", "description": "<detailed explanation>"}
   ],
-  "suggestedFix": "<optional diff in git format>"
+  "suggestedFix": "YOUR CODE IN GIT DIFF FORMAT - lines with +, -, or space prefix"
 }
 
-Code:
+Code to analyze:
 \`\`\`${language}
 ${code}
 \`\`\``;
@@ -94,12 +109,15 @@ ${code}
   try {
     return JSON.parse(jsonStr) as RoastResponse;
   } catch {
-    // Retry with simpler prompt
-    const retryPrompt = `Analyze this ${language} code and respond with ONLY valid JSON, no other text:
+    // Retry with simpler prompt - emphasize diff format
+    const retryPrompt = `Analyze this ${language} code. Respond with JSON ONLY, no other text.
 
-{"score": 5, "verdict": "decent_code", "roastQuote": "Needs review", "analysis": [{"severity": "warning", "title": "Review needed", "description": "This code could be improved"}]}
+CRITICAL: suggestedFix MUST be git diff format with lines starting with "-" (removed), "+" (added), or " " (context).
 
-Now analyze:
+Respond:
+{"score": 5, "verdict": "decent_code", "roastQuote": "Code reviewed", "analysis": [{"severity": "warning", "title": "Review needed", "description": "Could be improved"}], "suggestedFix": "  old line\n- removed bad line\n+ improved line\n  next line"}
+
+Code:
 ${code}`;
 
     const retryResponse = await fetch(
