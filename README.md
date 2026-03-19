@@ -1,7 +1,7 @@
 # DevRoast
 
 <p align="center">
-  <strong>Paste seu código. Seja criticado.</strong>
+  <strong>Cole seu código. Seja criticado.</strong>
 </p>
 
 <p align="center">
