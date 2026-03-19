@@ -63,7 +63,7 @@ interface AnalysisCardLabelProps extends VariantProps<typeof severityDot> {
 }
 
 function AnalysisCardLabel({
-  variant,
+  variant = "critical",
   className,
   children,
 }: AnalysisCardLabelProps) {

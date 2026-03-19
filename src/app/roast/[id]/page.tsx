@@ -117,7 +117,9 @@ export default async function RoastResultPage({
           <div className="grid grid-cols-2 gap-5">
             {roast.analysisItems.map((item) => (
               <AnalysisCardRoot key={item.id} variant={item.severity}>
-                <AnalysisCardLabel>{item.severity}</AnalysisCardLabel>
+                <AnalysisCardLabel variant={item.severity}>
+                  {item.severity}
+                </AnalysisCardLabel>
                 <AnalysisCardTitle>{item.title}</AnalysisCardTitle>
                 <AnalysisCardDescription>
                   {item.description}
