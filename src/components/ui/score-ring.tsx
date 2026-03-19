@@ -16,9 +16,9 @@ export function ScoreRing({ score, maxScore = 10, className }: ScoreRingProps) {
   const strokeDashoffset = circumference - percentage * circumference;
 
   const scoreColor =
-    score >= 7
+    score >= 6
       ? "text-accent-green"
-      : score >= 4
+      : score >= 3
         ? "text-accent-amber"
         : "text-accent-red";
 
@@ -54,8 +54,11 @@ export function ScoreRing({ score, maxScore = 10, className }: ScoreRingProps) {
         <defs>
           <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="var(--color-accent-red)" />
-            <stop offset="35%" stopColor="var(--color-accent-amber)" />
-            <stop offset="35%" stopColor="var(--color-accent-green)" />
+            <stop offset="30%" stopColor="var(--color-accent-red)" />
+            <stop offset="30%" stopColor="var(--color-accent-amber)" />
+            <stop offset="60%" stopColor="var(--color-accent-amber)" />
+            <stop offset="60%" stopColor="var(--color-accent-green)" />
+            <stop offset="100%" stopColor="var(--color-accent-green)" />
           </linearGradient>
         </defs>
       </svg>

@@ -70,9 +70,7 @@ function AnalysisCardLabel({
   return (
     <div className={`flex items-center gap-2 ${className ?? ""}`}>
       <span className={severityDot({ variant })} />
-      <span
-        className={`font-mono text-xs uppercase ${severityTitle({ variant })}`}
-      >
+      <span className={`font-mono text-xs ${severityTitle({ variant })}`}>
         {children}
       </span>
     </div>
