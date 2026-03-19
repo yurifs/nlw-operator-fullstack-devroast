@@ -16,11 +16,11 @@ export function ScoreRing({ score, maxScore = 10, className }: ScoreRingProps) {
   const strokeDashoffset = circumference - percentage * circumference;
 
   const scoreColor =
-    score >= 6
-      ? "text-accent-green"
-      : score >= 3
+    score < 3
+      ? "text-accent-red"
+      : score < 6
         ? "text-accent-amber"
-        : "text-accent-red";
+        : "text-accent-green";
 
   return (
     <div className={scoreRing({ className })}>
