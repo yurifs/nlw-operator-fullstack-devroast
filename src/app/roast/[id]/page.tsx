@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   AnalysisCardDescription,
@@ -9,6 +10,26 @@ import { CodeBlockCodeArea, CodeBlockRoot } from "@/components/ui/code-block";
 import { DiffLine } from "@/components/ui/diff-line";
 import { ScoreRing } from "@/components/ui/score-ring";
 import { caller } from "@/trpc/server";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+  return {
+    openGraph: {
+      title: `DevRoast - ${id}`,
+      images: [`${baseUrl}/api/og/${id}`],
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: [`${baseUrl}/api/og/${id}`],
+    },
+  };
+}
 
 export default async function RoastResultPage({
   params,
