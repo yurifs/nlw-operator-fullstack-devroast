@@ -23,7 +23,7 @@ export const metadata = {
 };
 
 export default async function LeaderboardPage() {
-  const [stats, { entries, totalCount }] = await Promise.all([
+  const [stats, entries] = await Promise.all([
     caller.roast.getStats(),
     caller.leaderboard.getLeaderboard({ limit: 20 }),
   ]);
@@ -57,7 +57,7 @@ export default async function LeaderboardPage() {
           </div>
 
           <div className="flex flex-col gap-5">
-            {entries.map((entry, index) => {
+            {entries.entries.map((entry, index) => {
               const previewCode = truncateCode(entry.code, 5);
 
               return (
