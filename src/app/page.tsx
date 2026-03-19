@@ -1,16 +1,12 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { LeaderboardEntries } from "@/app/leaderboard-entries";
 import { CodeEditor } from "@/components/code-editor";
 import { HomeStats } from "@/components/home-stats";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { HomeLeaderboard } from "./home-leaderboard";
+import { HydrateClient } from "@/trpc/server";
 import { HomeLeaderboardSkeleton } from "./home-leaderboard-skeleton";
 
-export const revalidate = 3600;
-
 export default async function Home() {
-  prefetch(trpc.roast.getStats.queryOptions());
-
   return (
     <HydrateClient>
       <main className="flex flex-col items-center px-10 pt-20">
@@ -56,7 +52,7 @@ export default async function Home() {
           </p>
 
           <Suspense fallback={<HomeLeaderboardSkeleton />}>
-            <HomeLeaderboard />
+            <LeaderboardEntries limit={3} />
           </Suspense>
         </section>
       </main>

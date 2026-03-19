@@ -1,23 +1,6 @@
-import { LeaderboardEntryCode } from "@/app/leaderboard-entry-code";
-import {
-  CodeBlock,
-  CodeBlockCodeArea,
-  CodeBlockHeaderMetaContainer,
-  CodeBlockHeaderMetaLanguage,
-  CodeBlockHeaderMetaLineCount,
-  CodeBlockHeaderMetaRank,
-  CodeBlockHeaderMetaScore,
-} from "@/components/ui/code-block";
-import { caller, HydrateClient, prefetch, trpc } from "@/trpc/server";
-
-export const revalidate = 3600;
-
-prefetch(trpc.roast.getStats.queryOptions());
-
-function truncateCode(code: string, maxLines: number): string {
-  const lines = code.split("\n");
-  return lines.slice(0, maxLines).join("\n");
-}
+import { LeaderboardEntries } from "@/app/leaderboard-entries";
+import { getLeaderboardStats } from "@/app/leaderboard-stats";
+import { HydrateClient } from "@/trpc/server";
 
 export const metadata = {
   title: "Shame Leaderboard | DevRoast",
@@ -25,10 +8,7 @@ export const metadata = {
 };
 
 export default async function LeaderboardPage() {
-  const [stats, entries] = await Promise.all([
-    caller.roast.getStats(),
-    caller.leaderboard.getLeaderboard({ limit: 20 }),
-  ]);
+  const stats = await getLeaderboardStats();
 
   return (
     <HydrateClient>
@@ -58,48 +38,7 @@ export default async function LeaderboardPage() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-5">
-            {entries.entries.map((entry, index) => {
-              const previewCode = truncateCode(entry.code, 5);
-
-              return (
-                <div key={entry.id} className="border border-border-primary">
-                  <CodeBlock>
-                    <CodeBlockHeaderMetaContainer>
-                      <div className="flex items-center gap-4">
-                        <CodeBlockHeaderMetaRank rank={index + 1} />
-                        <CodeBlockHeaderMetaScore score={entry.score} />
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <CodeBlockHeaderMetaLanguage>
-                          {entry.language}
-                        </CodeBlockHeaderMetaLanguage>
-                        <CodeBlockHeaderMetaLineCount>
-                          {entry.lineCount}
-                        </CodeBlockHeaderMetaLineCount>
-                      </div>
-                    </CodeBlockHeaderMetaContainer>
-
-                    <LeaderboardEntryCode
-                      lineCount={entry.lineCount}
-                      preview={
-                        <CodeBlockCodeArea
-                          code={previewCode}
-                          language={entry.language}
-                        />
-                      }
-                      fullCode={
-                        <CodeBlockCodeArea
-                          code={entry.code}
-                          language={entry.language}
-                        />
-                      }
-                    />
-                  </CodeBlock>
-                </div>
-              );
-            })}
-          </div>
+          <LeaderboardEntries limit={20} />
         </section>
       </main>
     </HydrateClient>
