@@ -25,7 +25,7 @@ export default function LeaderboardLoading() {
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="border border-border-primary rounded-md overflow-hidden"
+              className="border border-border-primary overflow-hidden"
             >
               <div className="flex items-center justify-between h-12 px-5 bg-bg-surface border-b border-border-primary">
                 <div className="flex items-center gap-4">
