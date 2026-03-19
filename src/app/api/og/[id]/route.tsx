@@ -5,7 +5,15 @@ import { RoastImage } from "@/components/og/roast-image";
 import { db } from "@/db";
 import { roasts } from "@/db/schema";
 
-export const runtime = "edge";
+const CACHE_HEADERS = {
+  "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
+};
+
+function setCacheHeaders(response: Response): void {
+  Object.entries(CACHE_HEADERS).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+}
 
 export async function GET(
   _request: Request,
@@ -16,13 +24,12 @@ export async function GET(
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (!uuidRegex.test(id)) {
-    return new ImageResponse(<OGFallback />, {
+    const response = new ImageResponse(<OGFallback />, {
       width: 1200,
       height: 630,
-      headers: {
-        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
-      },
     });
+    setCacheHeaders(response);
+    return response;
   }
 
   const [roast] = await db
@@ -32,20 +39,18 @@ export async function GET(
     .limit(1);
 
   if (!roast) {
-    return new ImageResponse(<OGFallback />, {
+    const response = new ImageResponse(<OGFallback />, {
       width: 1200,
       height: 630,
-      headers: {
-        "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
-      },
     });
+    setCacheHeaders(response);
+    return response;
   }
 
-  return new ImageResponse(<RoastImage roast={roast} />, {
+  const response = new ImageResponse(<RoastImage roast={roast} />, {
     width: 1200,
     height: 630,
-    headers: {
-      "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
-    },
   });
+  setCacheHeaders(response);
+  return response;
 }
