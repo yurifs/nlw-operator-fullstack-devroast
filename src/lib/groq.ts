@@ -11,7 +11,7 @@ interface AnalysisItem {
   description: string;
 }
 
-interface RoastResponse {
+export interface RoastResponse {
   score: number;
   verdict: string;
   roastQuote: string;
@@ -27,7 +27,7 @@ export async function analyzeCode(
 ): Promise<RoastResponse> {
   const apiKey = config?.apiKey || process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error("GROQ_API_KEY not configured");
-  const model = config?.model || "llama-3.1-70b-versatile";
+  const model = config?.model || "llama-3.3-70b-versatile";
   const maxTokens = config?.maxTokens || 2048;
   const temperature = config?.temperature || 0.7;
 
