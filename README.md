@@ -1,7 +1,7 @@
 # DevRoast
 
 <p align="center">
-  <strong>Paste seu código. seja criticado.</strong>
+  <strong>Paste seu código. Seja criticado.</strong>
 </p>
 
 <p align="center">
@@ -21,6 +21,19 @@ DevRoast é uma ferramenta de revisão de código que avalia seu código e te d�
 - **Modo Roast** - Alterna entre feedback honesto e sarcasmo máximo
 - **Leaderboard** - Veja o pior código da internet, ranqueado pela vergonha
 - **Análise Detalhada** - Receba feedbacks específicos sobre o que está errado no seu código
+- **Correções Sugeridas** - Veja como melhorar seu código com diff formatado
+- **OpenGraph Images** - Imagens compartilháveis automáticas para redes sociais
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router, React Compiler, Turbopack)
+- **API:** tRPC v11 + TanStack React Query v5
+- **Database:** PostgreSQL 16 + Drizzle ORM
+- **Styling:** Tailwind CSS v4 + tailwind-variants
+- **Linting:** Biome
+- **Image Generation:** Takumi (Rust-based OG images)
+- **AI:** Groq API (LLM-powered code analysis)
+- **Syntax Highlighting:** Shiki
 
 ## Como Funciona
 
@@ -29,28 +42,57 @@ DevRoast é uma ferramenta de revisão de código que avalia seu código e te d�
 3. Clique em "roast_my_code"
 4. Receba sua nota brutalmente honesta e análise
 
-## Tech Stack
-
-- Next.js 16
-- React 19
-- Tailwind CSS
-- shiki (syntax highlighting)
-- Base UI
-
 ## Começando
 
 ```bash
 # Clone o repositório
 git clone <repo-url>
 
+# Entre na pasta do projeto
+cd devroast
+
 # Instale as dependências
-npm install
+pnpm install
+
+# Configure as variáveis de ambiente
+cp .env.example .env.local
+# Edite .env.local com suas chaves:
+# - DATABASE_URL (PostgreSQL connection string)
+# - GROQ_API_KEY (Groq API key)
+
+# Inicie o Docker Compose (PostgreSQL)
+docker compose up -d
 
 # Rode o servidor de desenvolvimento
-npm run dev
+pnpm dev
 ```
 
 Abra [http://localhost:3000](http://localhost:3000) para ver o DevRoast em ação.
+
+## Variáveis de Ambiente
+
+```env
+# Database
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/devroast"
+
+# Groq API (obtenha em https://console.groq.com)
+GROQ_API_KEY="gsk_..."
+
+# URL base (para OG images)
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+```
+
+## Scripts
+
+```bash
+pnpm dev      # Servidor de desenvolvimento
+pnpm build    # Build de produção
+pnpm start    # Iniciar servidor de produção
+pnpm lint     # Verificar código com Biome
+pnpm typecheck # Verificar tipos TypeScript
+pnpm db:push  # Push schema para o banco
+pnpm db:seed  # Popular banco com dados de exemplo
+```
 
 ## Contribuindo
 
