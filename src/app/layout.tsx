@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={jetBrainsMono.variable}>
+    <html lang="en" className={jetBrainsMono.variable} suppressHydrationWarning>
       <body className="font-mono antialiased bg-bg-page text-text-primary min-h-screen">
         <TRPCReactProvider>
           <Navbar />

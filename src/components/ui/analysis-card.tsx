@@ -1,16 +1,40 @@
 import { tv, type VariantProps } from "tailwind-variants";
 
 const analysisCard = tv({
-  base: [
-    "rounded-md border border-border-primary",
-    "p-5",
-    "flex flex-col gap-3",
-  ],
+  base: ["border border-border-primary", "p-5", "flex flex-col gap-3"],
   variants: {
     variant: {
-      critical: ["border-accent-red/30"],
-      warning: ["border-accent-amber/30"],
-      good: ["border-accent-green/30"],
+      critical: [],
+      warning: [],
+      good: [],
+    },
+  },
+  defaultVariants: {
+    variant: "critical",
+  },
+});
+
+const severityDot = tv({
+  base: ["w-2 h-2 rounded-full"],
+  variants: {
+    variant: {
+      critical: ["bg-accent-red"],
+      warning: ["bg-accent-amber"],
+      good: ["bg-accent-green"],
+    },
+  },
+  defaultVariants: {
+    variant: "critical",
+  },
+});
+
+const severityTitle = tv({
+  base: ["font-mono text-xs"],
+  variants: {
+    variant: {
+      critical: ["text-accent-red"],
+      warning: ["text-accent-amber"],
+      good: ["text-accent-green"],
     },
   },
   defaultVariants: {
@@ -33,15 +57,24 @@ function AnalysisCardRoot({
   return <div className={analysisCard({ variant, className })}>{children}</div>;
 }
 
-interface AnalysisCardLabelProps {
+interface AnalysisCardLabelProps extends VariantProps<typeof severityDot> {
   className?: string;
   children?: React.ReactNode;
 }
 
-function AnalysisCardLabel({ className, children }: AnalysisCardLabelProps) {
+function AnalysisCardLabel({
+  variant,
+  className,
+  children,
+}: AnalysisCardLabelProps) {
   return (
     <div className={`flex items-center gap-2 ${className ?? ""}`}>
-      {children}
+      <span className={severityDot({ variant })} />
+      <span
+        className={`font-mono text-xs uppercase ${severityTitle({ variant })}`}
+      >
+        {children}
+      </span>
     </div>
   );
 }

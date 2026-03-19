@@ -21,6 +21,8 @@ async function CodeBlockCodeArea({
   language = "javascript",
   className,
 }: CodeBlockCodeAreaProps) {
+  "use cache";
+
   const html = await codeToHtml(code, {
     lang: language,
     theme: "vesper",

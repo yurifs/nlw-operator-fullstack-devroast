@@ -1,47 +1,12 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { LeaderboardEntries } from "@/app/leaderboard-entries";
 import { CodeEditor } from "@/components/code-editor";
 import { HomeStats } from "@/components/home-stats";
-import {
-  TableRowCode,
-  TableRowLanguage,
-  TableRowRank,
-  TableRowRoot,
-  TableRowScore,
-} from "@/components/ui/table-row";
-import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-
-const leaderboardData = [
-  {
-    rank: 1,
-    score: 1.2,
-    codeLines: [
-      'eval(prompt("enter code"))',
-      "document.write(response)",
-      "// trust the user lol",
-    ],
-    language: "javascript",
-  },
-  {
-    rank: 2,
-    score: 1.8,
-    codeLines: [
-      "if (x == true) { return true; }",
-      "else if (x == false) { return false; }",
-      "else { return !false; }",
-    ],
-    language: "typescript",
-  },
-  {
-    rank: 3,
-    score: 2.1,
-    codeLines: ["SELECT * FROM users WHERE 1=1", "-- TODO: add authentication"],
-    language: "sql",
-  },
-];
+import { HydrateClient } from "@/trpc/server";
+import { HomeLeaderboardSkeleton } from "./home-leaderboard-skeleton";
 
 export default async function Home() {
-  prefetch(trpc.roast.getStats.queryOptions());
-
   return (
     <HydrateClient>
       <main className="flex flex-col items-center px-10 pt-20">
@@ -86,47 +51,9 @@ export default async function Home() {
             {"//"} the worst code on the internet, ranked by shame
           </p>
 
-          <div className="border border-border-primary rounded-md overflow-hidden">
-            <div className="flex items-center h-10 px-5 bg-bg-surface border-b border-border-primary">
-              <span className="w-12 text-text-tertiary text-xs font-medium">
-                #
-              </span>
-              <span className="w-16 text-text-tertiary text-xs font-medium">
-                score
-              </span>
-              <span className="flex-1 text-text-tertiary text-xs font-medium">
-                code
-              </span>
-              <span className="w-24 text-text-secondary text-xs font-medium">
-                lang
-              </span>
-            </div>
-
-            {leaderboardData.map((row) => (
-              <TableRowRoot key={row.rank}>
-                <TableRowRank rank={row.rank} />
-                <TableRowScore score={row.score} />
-                <TableRowCode>
-                  {row.codeLines.map((line) => (
-                    <span
-                      key={line}
-                      className={`font-mono text-sm ${line.startsWith("//") ? "text-text-tertiary" : "text-text-secondary"}`}
-                    >
-                      {line}
-                    </span>
-                  ))}
-                </TableRowCode>
-                <TableRowLanguage language={row.language} />
-              </TableRowRoot>
-            ))}
-          </div>
-
-          <Link
-            href="/leaderboard"
-            className="text-text-tertiary text-xs text-center py-4 hover:text-text-secondary transition-colors"
-          >
-            showing top 3 of 2,847 · view full leaderboard &gt;&gt;
-          </Link>
+          <Suspense fallback={<HomeLeaderboardSkeleton />}>
+            <LeaderboardEntries limit={3} />
+          </Suspense>
         </section>
       </main>
     </HydrateClient>
