@@ -161,8 +161,8 @@ export function CodeEditor() {
               <textarea
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                disabled={createRoast.isPending}
-                className="absolute inset-0 w-full h-full p-4 font-mono text-sm leading-6 bg-transparent text-transparent whitespace-pre resize-none focus:outline-none m-0"
+                readOnly={createRoast.isPending}
+                className={`absolute inset-0 w-full h-full p-4 font-mono text-sm leading-6 bg-transparent text-transparent whitespace-pre resize-none focus:outline-none m-0${createRoast.isPending ? " cursor-not-allowed" : ""}`}
                 style={{
                   caretColor: "var(--color-accent-green)",
                 }}
