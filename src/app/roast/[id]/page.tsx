@@ -16,6 +16,13 @@ export default async function RoastResultPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(id)) {
+    notFound();
+  }
+
   const roast = await caller.roast.getById({ id });
 
   if (!roast) {
