@@ -22,6 +22,13 @@ export function ScoreRing({ score, maxScore = 10, className }: ScoreRingProps) {
         ? "text-accent-amber"
         : "text-accent-green";
 
+  const strokeColor =
+    score < 3
+      ? "var(--color-accent-red)"
+      : score < 6
+        ? "var(--color-accent-amber)"
+        : "var(--color-accent-green)";
+
   return (
     <div className={scoreRing({ className })}>
       <svg
@@ -42,25 +49,15 @@ export function ScoreRing({ score, maxScore = 10, className }: ScoreRingProps) {
           cy="50"
           r="40"
           fill="none"
-          stroke="url(#scoreGradient)"
+          stroke={strokeColor}
           strokeWidth="4"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           style={{
-            transition: "stroke-dashoffset 0.5s ease-out",
+            transition: "stroke 0.3s ease-out, stroke-dashoffset 0.5s ease-out",
           }}
         />
-        <defs>
-          <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-accent-red)" />
-            <stop offset="30%" stopColor="var(--color-accent-red)" />
-            <stop offset="30%" stopColor="var(--color-accent-amber)" />
-            <stop offset="60%" stopColor="var(--color-accent-amber)" />
-            <stop offset="60%" stopColor="var(--color-accent-green)" />
-            <stop offset="100%" stopColor="var(--color-accent-green)" />
-          </linearGradient>
-        </defs>
       </svg>
       <div className="flex items-center gap-0.5">
         <span className={`text-5xl font-bold font-mono ${scoreColor}`}>
