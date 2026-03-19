@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -62,3 +63,14 @@ export type Roast = typeof roasts.$inferSelect;
 export type NewRoast = typeof roasts.$inferInsert;
 export type AnalysisItem = typeof analysisItems.$inferSelect;
 export type NewAnalysisItem = typeof analysisItems.$inferInsert;
+
+export const roastsRelations = relations(roasts, ({ many }) => ({
+  analysisItems: many(analysisItems),
+}));
+
+export const analysisItemsRelations = relations(analysisItems, ({ one }) => ({
+  roast: one(roasts, {
+    fields: [analysisItems.roastId],
+    references: [roasts.id],
+  }),
+}));
