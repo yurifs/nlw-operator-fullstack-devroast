@@ -38,8 +38,6 @@ import {
 
 ```tsx
 import { caller } from "@/trpc/server";
-import { trpc } from "@/trpc/server";
-import { HydrateClient, prefetch } from "@/trpc/server";
 ```
 
 - [ ] **Step 3: Add helper function for code truncation**
@@ -56,14 +54,14 @@ function truncateCode(code: string, maxLines: number): string {
 ```tsx
 export default async function LeaderboardPage() {
   // Parallel data fetching
-  const [stats, { entries }] = await Promise.all([
+  // Note: leaderboard.list returns entries array directly (not { entries })
+  const [stats, entries] = await Promise.all([
     caller.roast.getStats(),
     caller.leaderboard.list({ limit: 20 }),
   ]);
 
   return (
-    <HydrateClient>
-      <main className="flex flex-col items-center min-h-screen bg-bg-page">
+    <main className="flex flex-col items-center min-h-screen bg-bg-page">
         <section className="flex flex-col gap-10 w-full max-w-[1440px] px-20 py-10">
           {/* Header with stats */}
           <div className="flex flex-col gap-4">
@@ -125,7 +123,6 @@ export default async function LeaderboardPage() {
           </div>
         </section>
       </main>
-    </HydrateClient>
   );
 }
 ```
@@ -148,13 +145,6 @@ import { LeaderboardEntryCode } from "@/app/leaderboard-entry-code";
 // DELETE:
 // const totalRoasts = 2847;
 // const avgScore = 4.2;
-```
-
-- [ ] **Step 8: Add prefetch call for hydration**
-
-Add after imports (before function):
-```tsx
-prefetch(trpc.roast.getStats.queryOptions());
 ```
 
 ---
@@ -205,7 +195,7 @@ Expected: Leaderboard page loads with real data from database
 
 ```bash
 git add src/app/leaderboard/page.tsx
-git commit -m "feat(leaderboard): integrate with tRPC backend"
+git commit -m "feat(leaderboard): replace mock data with tRPC backend"
 ```
 
 ---
